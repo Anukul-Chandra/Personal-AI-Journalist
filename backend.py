@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException,File, UploadFile,Response
 from dotenv import load_dotenv
 
 
-from moels import TopicRequest, AudioResponse,NewsRequest,NewsResponse
+from models import AudioRequest, AudioResponse
 
 
 app = FastAPI()
@@ -10,38 +10,31 @@ load_dotenv()
 
 
 
-@app.post("/generate-news-audio")
-async def generate_news_audio(request: NewsRequest):
+@app.post("/generate-audio")
+async def generate_audio(request: AudioRequest):
     try :
-        results ={}
-
-        #Scrape the data
+        results = {}
 
         if request.source_type in ["news", "both"]:
-           # scape news data and store in results["news"]
             results["news"] = {"News_Scrapped": "This is from Google news"}
 
         if request.source_type in ["reddit", "both"]:
-            # scrape reddit data and store in results["reddit"]
             results["reddit"] = {"Reddit_Scrapped": "This is from Reddit"}
 
         news_data = results.get("news", {})
         reddit_data = results.get("reddit", {})
 
+        news_summary = f"Summary for {', '.join(request.topics)}"
 
-        # Setup LLM Summarizer 
+        audio_path = f"/audio/{hash(news_summary)}.mp3"
 
-        news_summary = my_function_to_summarize(news_data,reddit_data)
-
-        # Convert Summary to Audio
-
-        audio_path = convert_summary_to_audio(news_summary)
-
-        if audio_path:
-            return response,headers,etc
+        return AudioResponse(
+            audio_url=audio_path,
+            topics_analyzed=request.topics,
+            source_type=request.source_type,
+            duration=30.0
+        )
         
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        else:
-            raise HTTPException(status_code=500, detail="Audio generation failed")
+    
