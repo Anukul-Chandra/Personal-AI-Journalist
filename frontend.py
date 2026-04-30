@@ -59,11 +59,30 @@ def main():
     st.markdown("#### ⚙️ Analysis Controls")
     st.subheader(" 🎙️ Audio Generation")
 
+    if st.button("Generate Audio Summary 🎧", disabled=len(st.session_state.topics) == 0):
+        if not st.session_state.topics:
+            st.warning("Please add at least one topic to generate audio summary.")
+        else:
+            with st.spinner("Generating audio summary..."):
+                try:
+                    response = requests.post(
+                        f"{BACKEND_URL}/generate-audio",
+                        json={"topics": st.session_state.topics, "source_type": source_type}
+                    )
+                    if response.status_code == 200:
+                        audio_url = response.json().get("audio_url")
+                        st.success("Audio summary generated successfully!")
+                        st.audio(audio_url)
+                    else:
+                        handel_api_error(response)
+                except requests.exceptions.RequestException as e:
+                    st.error(f"Network error: {e}")
+
 
 def handel_api_error(response):
 
     """Handel API error response """
-    
+
     try:
         error_details = response.json().get("detail", "unknown error")
         st.error(f"API Error ({response.status_code}) - {error_details}")
