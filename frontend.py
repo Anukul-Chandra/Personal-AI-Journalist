@@ -27,18 +27,21 @@ def main():
     with col1:
         new_topic = st.text_input("Enter a topic to analyze",placeholder="e.g. Artificial Intelligence")
     with col2:
-        add_disabled = len(st.session_state.topics) >= 1 or not new_topic.strip()
+        add_disabled = len(st.session_state.topics) >= 5 or not new_topic.strip()
 
         if st.button("Add Topic ➕", disabled=add_disabled):
             st.session_state.topics.append(new_topic.strip())
             st.rerun()
 
+
+# Add or remove functionality 
     if st.session_state.topics:
         st.subheader("✅ Selected Topics")
         for i,topic in enumerate(st.session_state.topics):
-            st.markdown(f"- {topic}  <button style='color: red; border: none; background: none;' onclick='removeTopic({i})'>❌</button>", unsafe_allow_html=True)   
+            
             cols = st.columns([4,1])
             cols[0].write(f"{i+1}. {topic}")
+            
             if cols[1].button("Remove ❌", key=f"remove_{i}"):
                 del st.session_state.topics[i]
                 st.rerun()
