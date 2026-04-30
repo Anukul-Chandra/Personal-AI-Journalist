@@ -2,6 +2,13 @@
 # Setup Streamlit app for the frontend interface of the Personal AI Journalist
 import streamlit as st
 
+import requests
+
+
+
+BACKEND_URL = "http://localhost:8000"  
+
+
 
 def main():
     st.title("Personal AI Journalist")
@@ -41,11 +48,28 @@ def main():
             
             cols = st.columns([4,1])
             cols[0].write(f"{i+1}. {topic}")
-            
+
             if cols[1].button("Remove ❌", key=f"remove_{i}"):
                 del st.session_state.topics[i]
                 st.rerun()
 
+
+
+    # Analysis Controls
+    st.markdown("#### ⚙️ Analysis Controls")
+    st.subheader(" 🎙️ Audio Generation")
+
+
+def handel_api_error(response):
+
+    """Handel API error response """
+    
+    try:
+        error_details = response.json().get("detail", "unknown error")
+        st.error(f"API Error ({response.status_code}) - {error_details}")
+    except ValueError:
+        st.error(f"Unexpected API error - {response.text}")
+    
 # User able to write topics and mention sources of interest
 
 # Show Response from the backend
