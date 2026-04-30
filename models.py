@@ -19,6 +19,11 @@ class AudioRequest(BaseModel):
     source_type: SourceType = SourceType.BOTH
 
 
+class NewsRequest(BaseModel):
+    topics: List[str]
+    source_type: SourceType = SourceType.BOTH
+
+
 class AudioResponse(BaseModel):
     audio_url: str
     topics_analyzed: List[str]
